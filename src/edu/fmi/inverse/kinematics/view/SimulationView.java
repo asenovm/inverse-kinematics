@@ -13,8 +13,24 @@ import javax.swing.JPanel;
 
 public class SimulationView extends JFrame {
 
+	/**
+	 * {@value}
+	 */
+	private static final int HEIGHT_ITEM = 15;
+
+	/**
+	 * {@value}
+	 */
+	private static final int WIDTH_ITEM = 15;
+
+	/**
+	 * {@value}
+	 */
 	private static final int HEIGHT_ARM_START = 5;
 
+	/**
+	 * {@value}
+	 */
 	private static final int WIDTH_ARM_START = 5;
 
 	/**
@@ -114,5 +130,10 @@ public class SimulationView extends JFrame {
 		graphics.fillRect((WIDTH_FRAME - WIDTH_ARM_START) / 2,
 				(HEIGHT_FRAME - HEIGHT_ARM_START) / 2, WIDTH_ARM_START,
 				HEIGHT_ARM_START);
+
+		graphics.setColor(Color.RED);
+		graphics.fillRect((int) (Math.random() * WIDTH_FRAME - WIDTH_ITEM),
+				(int) (Math.random() * HEIGHT_FRAME - HEIGHT_ITEM), WIDTH_ITEM,
+				HEIGHT_ITEM);
 	}
 }
