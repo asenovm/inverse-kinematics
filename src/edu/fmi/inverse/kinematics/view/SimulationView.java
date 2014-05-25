@@ -2,6 +2,7 @@ package edu.fmi.inverse.kinematics.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
@@ -11,6 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class SimulationView extends JFrame {
+
+	private static final int HEIGHT_ARM_START = 5;
+
+	private static final int WIDTH_ARM_START = 5;
 
 	/**
 	 * {@value}
@@ -101,5 +106,13 @@ public class SimulationView extends JFrame {
 		cell.setMinimumSize(cellDimension);
 		cell.setMaximumSize(cellDimension);
 		return cell;
+	}
+
+	@Override
+	public void paint(Graphics graphics) {
+		super.paint(graphics);
+		graphics.fillRect((WIDTH_FRAME - WIDTH_ARM_START) / 2,
+				(HEIGHT_FRAME - HEIGHT_ARM_START) / 2, WIDTH_ARM_START,
+				HEIGHT_ARM_START);
 	}
 }
