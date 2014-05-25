@@ -71,19 +71,7 @@ public class SimulationView extends JFrame {
 		pack();
 		setVisible(true);
 
-		final GridLayout layout = new GridLayout(NUM_CELLS, NUM_ROWS);
-		setLayout(layout);
-
-		for (int i = 0; i < NUM_CELLS * NUM_ROWS; ++i) {
-			final JPanel cell = new JPanel();
-			cell.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
-			final Dimension cellDimension = new Dimension(WIDTH_CELL,
-					HEIGHT_CELL);
-			cell.setPreferredSize(cellDimension);
-			cell.setMinimumSize(cellDimension);
-			cell.setMaximumSize(cellDimension);
-			add(cell);
-		}
+		addCells();
 	}
 
 	public SimulationView() throws HeadlessException {
@@ -98,4 +86,20 @@ public class SimulationView extends JFrame {
 		this(title, null);
 	}
 
+	private void addCells() {
+		setLayout(new GridLayout(NUM_CELLS, NUM_ROWS));
+		for (int i = 0; i < NUM_CELLS * NUM_ROWS; ++i) {
+			add(createCell());
+		}
+	}
+
+	private JPanel createCell() {
+		final JPanel cell = new JPanel();
+		cell.setBorder(BorderFactory.createLineBorder(COLOR_BORDER));
+		final Dimension cellDimension = new Dimension(WIDTH_CELL, HEIGHT_CELL);
+		cell.setPreferredSize(cellDimension);
+		cell.setMinimumSize(cellDimension);
+		cell.setMaximumSize(cellDimension);
+		return cell;
+	}
 }
