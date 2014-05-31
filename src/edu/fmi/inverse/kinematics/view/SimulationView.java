@@ -6,12 +6,22 @@ import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class SimulationView extends JFrame {
+import edu.fmi.inverse.kinematics.ModelListener;
+import edu.fmi.inverse.kinematics.PositionsCalculator;
+import edu.fmi.inverse.kinematics.Segment;
+import edu.fmi.inverse.kinematics.SimulationModel;
+
+public class SimulationView extends JFrame implements ModelListener {
 
 	/**
 	 * {@value}
@@ -51,7 +61,7 @@ public class SimulationView extends JFrame {
 	/**
 	 * {@value}
 	 */
-	private static final int WIDTH_FRAME = 600;
+	private static final int WIDTH_FRAME = 800;
 
 	/**
 	 * {@value}
@@ -78,8 +88,16 @@ public class SimulationView extends JFrame {
 	 */
 	private static final Color COLOR_BORDER = Color.getHSBColor(0, 0, 26.7f);
 
+	private int targetX = 150;
+
+	private int targetY = 150;
+
+	private List<Segment> segments;
+
 	public SimulationView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
+
+		segments = new LinkedList<Segment>();
 
 		final Dimension dimension = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
 		setPreferredSize(dimension);
@@ -93,6 +111,26 @@ public class SimulationView extends JFrame {
 		setVisible(true);
 
 		addCells();
+
+		addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseMoved(MouseEvent event) {
+				System.out.println("moved");
+				targetX = event.getX();
+				targetY = event.getY();
+				paint(getGraphics());
+				final int centerX = (WIDTH_FRAME - WIDTH_ARM_START) / 2;
+				final int centerY = (HEIGHT_FRAME - HEIGHT_ARM_START) / 2;
+				new PositionsCalculator().calculatePositions(new Point(targetX,
+						targetY), new Point(centerX, centerY), segments);
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent event) {
+				// blank
+			}
+		});
 	}
 
 	public SimulationView() throws HeadlessException {
@@ -127,13 +165,59 @@ public class SimulationView extends JFrame {
 	@Override
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
-		graphics.fillRect((WIDTH_FRAME - WIDTH_ARM_START) / 2,
-				(HEIGHT_FRAME - HEIGHT_ARM_START) / 2, WIDTH_ARM_START,
-				HEIGHT_ARM_START);
+
+		final int centerX = (WIDTH_FRAME - WIDTH_ARM_START) / 2;
+		final int centerY = (HEIGHT_FRAME - HEIGHT_ARM_START) / 2;
+		graphics.fillRect(centerX, centerY, WIDTH_ARM_START, HEIGHT_ARM_START);
 
 		graphics.setColor(Color.RED);
-		graphics.fillRect((int) (Math.random() * WIDTH_FRAME - WIDTH_ITEM),
-				(int) (Math.random() * HEIGHT_FRAME - HEIGHT_ITEM), WIDTH_ITEM,
-				HEIGHT_ITEM);
+		graphics.fillArc(targetX, targetY, WIDTH_ITEM, HEIGHT_ITEM, 0, 360);
+
+		double angle = 0;
+		for (int i = 0; i < segments.size(); ++i) {
+			final Segment segment = segments.get(i);
+			angle += segment.getAngle();
+			angle = PositionsCalculator.simplifyAngle(angle);
+			double cosAngle = Math.cos(angle);
+			double sinAngle = Math.sin(angle);
+
+			if (i == 0) {
+				segment.startX = 0;
+				segment.startY = 0;
+				segment.endX = (int) (segment.startX + segment.getLength()
+						* cosAngle);
+				segment.endY = (int) (segment.startY + segment.getLength()
+						* sinAngle);
+				graphics.setColor(Color.BLUE);
+				graphics.drawLine(segment.startX + WIDTH_FRAME / 2,
+						segment.startY + HEIGHT_FRAME / 2, segment.endX
+								+ WIDTH_FRAME / 2, segment.endY + HEIGHT_FRAME
+								/ 2);
+			} else {
+				final Segment previousSegment = segments.get(i - 1);
+				segment.startX = previousSegment.endX;
+				segment.endX = (int) (segment.startX + segment.getLength()
+						* cosAngle);
+				segment.startY = previousSegment.endY;
+				segment.endY = (int) (segment.startY + segment.getLength()
+						* sinAngle);
+				if (i == 1) {
+					graphics.setColor(Color.RED);
+				} else {
+					graphics.setColor(Color.CYAN);
+				}
+				graphics.drawLine(segment.startX + WIDTH_FRAME / 2,
+						segment.startY + HEIGHT_FRAME / 2, segment.endX
+								+ WIDTH_FRAME / 2, segment.endY + HEIGHT_FRAME
+								/ 2);
+			}
+		}
+	}
+
+	@Override
+	public void onModelChanged(SimulationModel model) {
+		segments = model.getSegments();
+		invalidate();
+		paint(getGraphics());
 	}
 }

@@ -11,7 +11,9 @@ public class InverseKinematics {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				final SimulationModel model = new SimulationModel();
 				final SimulationView view = new SimulationView();
+				model.setOnChangedListener(view);
 			}
 		});
 	}
