@@ -6,7 +6,6 @@ import edu.fmi.inverse.kinematics.view.SimulationView;
 
 public class InverseKinematics {
 
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override

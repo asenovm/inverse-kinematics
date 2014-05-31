@@ -15,30 +15,35 @@ public class PositionsCalculator {
 
 	public void calculatePositions(final Point target, final Point start,
 			final List<Segment> segments) {
-		List<Bone_2D_CCD> ccdBones = new LinkedList<Bone_2D_CCD>();
-		for (int boneIdx = 0; boneIdx <= segments.size(); ++boneIdx) {
-			Bone_2D_CCD newCcdBone = new Bone_2D_CCD();
-			newCcdBone.angle = (boneIdx < segments.size()) ? segments.get(
-					boneIdx).getAngle() : 0;
-			newCcdBone.x = (boneIdx > 0) ? segments.get(boneIdx - 1)
-					.getLength() : 0;
-			newCcdBone.y = 0;
-
-			ccdBones.add(newCcdBone);
+		List<Segment> ccdBones = new LinkedList<Segment>();
+		for (int i = 0; i <= segments.size(); ++i) {
+			Segment segment = new Segment(50);
+			segment.angle = getAngleForSegment(segments, i);
+			segment.startX = getStartXForSegment(segments, i);
+			segment.startY = 0;
+			ccdBones.add(segment);
 		}
 
 		int iterations = 0;
-		while (CalcIK_2D_CCD(ccdBones, target.x - 400, target.y - 300, 1) == CCDResult.PROCESSING
+		while (CalcIK_2D_CCD(ccdBones, target.x - 400, target.y - 300, 1) == CalculationState.PROCESSING
 				|| iterations < ITERATION_COUNT_MAX) {
 			++iterations;
 		}
 
-		for (int boneIdx = 0; boneIdx < segments.size(); ++boneIdx) {
-			final Segment segment = segments.get(boneIdx);
-			segment.angle = ccdBones.get(boneIdx).angle;
-			segment.startX = (int) ccdBones.get(boneIdx).x;
-			segment.startY = (int) ccdBones.get(boneIdx).y;
+		for (int i = 0; i < segments.size(); ++i) {
+			final Segment segment = segments.get(i);
+			segment.angle = ccdBones.get(i).angle;
+			segment.startX = (int) ccdBones.get(i).startX;
+			segment.startY = (int) ccdBones.get(i).startY;
 		}
+	}
+
+	private int getStartXForSegment(final List<Segment> segments, int i) {
+		return (int) ((i > 0) ? segments.get(i - 1).getLength() : 0);
+	}
+
+	private double getAngleForSegment(final List<Segment> segments, int i) {
+		return (i < segments.size()) ? segments.get(i).getAngle() : 0;
 	}
 
 	private class Bone_2D_CCD_World {
@@ -49,106 +54,106 @@ public class PositionsCalculator {
 		public double sinAngle;
 	}
 
-	public enum CCDResult {
+	public enum CalculationState {
 		SUCCESS, PROCESSING, FAILURE;
 	}
 
-	public class Bone_2D_CCD {
-		public double x;
-		public double y;
-		public double angle;
-	}
-
-	public CCDResult CalcIK_2D_CCD(List<Bone_2D_CCD> bones, double targetX,
+	public CalculationState CalcIK_2D_CCD(List<Segment> bones, double targetX,
 			double targetY, double arrivalDist) {
 
 		final double epsilon = 0.0001;
 		final double trivialArcLength = 0.00001;
-		int numBones = bones.size();
 		double arrivalDistSqr = arrivalDist * arrivalDist;
 
 		List<Bone_2D_CCD_World> worldBones = new ArrayList<Bone_2D_CCD_World>();
 
 		Bone_2D_CCD_World rootWorldBone = new Bone_2D_CCD_World();
-		rootWorldBone.x = bones.get(0).x;
-		rootWorldBone.y = bones.get(0).y;
+		rootWorldBone.x = bones.get(0).startX;
+		rootWorldBone.y = bones.get(0).startY;
 		rootWorldBone.angle = bones.get(0).angle;
 		rootWorldBone.cosAngle = Math.cos(rootWorldBone.angle);
 		rootWorldBone.sinAngle = Math.sin(rootWorldBone.angle);
 		worldBones.add(rootWorldBone);
 
-		for (int boneIdx = 1; boneIdx < numBones; ++boneIdx) {
-			Bone_2D_CCD_World prevWorldBone = worldBones.get(boneIdx - 1);
-			Bone_2D_CCD curLocalBone = bones.get(boneIdx);
+		for (int i = 1; i < bones.size(); ++i) {
+			Bone_2D_CCD_World prevWorldBone = worldBones.get(i - 1);
+			Segment curLocalBone = bones.get(i);
 
 			Bone_2D_CCD_World newWorldBone = new Bone_2D_CCD_World();
 			newWorldBone.x = prevWorldBone.x + prevWorldBone.cosAngle
-					* curLocalBone.x - prevWorldBone.sinAngle * curLocalBone.y;
+					* curLocalBone.startX - prevWorldBone.sinAngle
+					* curLocalBone.startY;
 			newWorldBone.y = prevWorldBone.y + prevWorldBone.sinAngle
-					* curLocalBone.x + prevWorldBone.cosAngle * curLocalBone.y;
+					* curLocalBone.startX + prevWorldBone.cosAngle
+					* curLocalBone.startY;
 			newWorldBone.angle = prevWorldBone.angle + curLocalBone.angle;
 			newWorldBone.cosAngle = Math.cos(newWorldBone.angle);
 			newWorldBone.sinAngle = Math.sin(newWorldBone.angle);
 			worldBones.add(newWorldBone);
 		}
 
-		double endX = worldBones.get(numBones - 1).x;
-		double endY = worldBones.get(numBones - 1).y;
+		double endX = worldBones.get(bones.size() - 1).x;
+		double endY = worldBones.get(bones.size() - 1).y;
 
-		boolean modifiedBones = false;
-		for (int boneIdx = numBones - 2; boneIdx >= 0; --boneIdx) {
-			double curToEndX = endX - worldBones.get(boneIdx).x;
-			double curToEndY = endY - worldBones.get(boneIdx).y;
-			double curToEndMag = Math.sqrt(curToEndX * curToEndX + curToEndY
+		boolean isModified = false;
+
+		for (int i = bones.size() - 2; i >= 0; --i) {
+			double curToEndX = endX - worldBones.get(i).x;
+			double curToEndY = endY - worldBones.get(i).y;
+			double curToEndLength = Math.sqrt(curToEndX * curToEndX + curToEndY
 					* curToEndY);
 
-			double curToTargetX = targetX - worldBones.get(boneIdx).x;
-			double curToTargetY = targetY - worldBones.get(boneIdx).y;
-			double curToTargetMag = Math.sqrt(curToTargetX * curToTargetX
+			double curToTargetX = targetX - worldBones.get(i).x;
+			double curToTargetY = targetY - worldBones.get(i).y;
+			double curToTargetLength = Math.sqrt(curToTargetX * curToTargetX
 					+ curToTargetY * curToTargetY);
 
-			double cosRotAng;
-			double sinRotAng;
-			double endTargetMag = (curToEndMag * curToTargetMag);
+			double cosRotationAngle;
+			double sinRotationAngle;
+
+			double endTargetMag = (curToEndLength * curToTargetLength);
+
 			if (endTargetMag <= epsilon) {
-				cosRotAng = 1;
-				sinRotAng = 0;
+				cosRotationAngle = 1;
+				sinRotationAngle = 0;
 			} else {
-				cosRotAng = (curToEndX * curToTargetX + curToEndY
+				cosRotationAngle = (curToEndX * curToTargetX + curToEndY
 						* curToTargetY)
 						/ endTargetMag;
-				sinRotAng = (curToEndX * curToTargetY - curToEndY
+				sinRotationAngle = (curToEndX * curToTargetY - curToEndY
 						* curToTargetX)
 						/ endTargetMag;
 			}
 
-			double rotAng = Math.acos(Math.max(-1, Math.min(1, cosRotAng)));
-			if (sinRotAng < 0.0) {
-				rotAng = -rotAng;
+			double rotationAngle = Math.acos(Math.max(-1,
+					Math.min(1, cosRotationAngle)));
+			if (sinRotationAngle < 0.0) {
+				rotationAngle = -rotationAngle;
 			}
 
-			endX = worldBones.get(boneIdx).x + cosRotAng * curToEndX
-					- sinRotAng * curToEndY;
-			endY = worldBones.get(boneIdx).y + sinRotAng * curToEndX
-					+ cosRotAng * curToEndY;
+			endX = worldBones.get(i).x + cosRotationAngle * curToEndX
+					- sinRotationAngle * curToEndY;
+			endY = worldBones.get(i).y + sinRotationAngle * curToEndX
+					+ cosRotationAngle * curToEndY;
 
-			bones.get(boneIdx).angle = AngleUtil.simplifyAngle(bones
-					.get(boneIdx).angle + rotAng);
+			bones.get(i).angle = AngleUtil.simplifyAngle(bones.get(i).angle
+					+ rotationAngle);
 
 			double endToTargetX = (targetX - endX);
 			double endToTargetY = (targetY - endY);
+			
 			if (endToTargetX * endToTargetX + endToTargetY * endToTargetY <= arrivalDistSqr) {
-				return CCDResult.SUCCESS;
+				return CalculationState.SUCCESS;
 			}
 
-			modifiedBones = !modifiedBones
-					&& Math.abs(rotAng) * curToEndMag > trivialArcLength;
+			isModified = !isModified
+					&& Math.abs(rotationAngle) * curToEndLength > trivialArcLength;
 		}
 
-		if (modifiedBones) {
-			return CCDResult.PROCESSING;
+		if (isModified) {
+			return CalculationState.PROCESSING;
 		} else {
-			return CCDResult.FAILURE;
+			return CalculationState.FAILURE;
 		}
 	}
 
