@@ -6,7 +6,9 @@ import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -66,6 +68,8 @@ public class SimulationView extends JFrame implements ModelListener {
 
 	private SimulationModel model;
 
+	private final Map<Integer, Color> colors = new HashMap<Integer, Color>();
+
 	public SimulationView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
 
@@ -81,6 +85,15 @@ public class SimulationView extends JFrame implements ModelListener {
 		setVisible(true);
 
 		addCells();
+		colors.put(0, Color.RED);
+		colors.put(1, Color.BLUE);
+		colors.put(2, Color.CYAN);
+		colors.put(3, Color.DARK_GRAY);
+		colors.put(4, Color.GREEN);
+		colors.put(5, Color.MAGENTA);
+		colors.put(6, Color.ORANGE);
+		colors.put(7, Color.PINK);
+		colors.put(8, Color.RED);
 	}
 
 	public SimulationView() throws HeadlessException {
@@ -137,12 +150,13 @@ public class SimulationView extends JFrame implements ModelListener {
 			double cosAngle = Math.cos(angle);
 			double sinAngle = Math.sin(angle);
 
+			graphics.setColor(colors.get(i));
+
 			if (i == 0) {
 				segment.startX = 0;
 				segment.startY = 0;
 				segment.endX = segment.startX + segment.getLength() * cosAngle;
 				segment.endY = segment.startY + segment.getLength() * sinAngle;
-				graphics.setColor(Color.BLUE);
 			} else {
 				final Segment previousSegment = segments.get(i - 1);
 				segment.startX = previousSegment.endX;
@@ -151,12 +165,8 @@ public class SimulationView extends JFrame implements ModelListener {
 				segment.startY = previousSegment.endY;
 				segment.endY = (int) (segment.startY + segment.getLength()
 						* sinAngle);
-				if (i == 1) {
-					graphics.setColor(Color.RED);
-				} else {
-					graphics.setColor(Color.CYAN);
-				}
 			}
+
 			graphics.drawLine((int) (segment.startX + WIDTH_FRAME / 2),
 					(int) (segment.startY + HEIGHT_FRAME / 2),
 					(int) (segment.endX + WIDTH_FRAME / 2),
