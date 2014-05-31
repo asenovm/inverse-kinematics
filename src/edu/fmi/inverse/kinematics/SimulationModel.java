@@ -22,12 +22,12 @@ public class SimulationModel implements MouseMotionListener {
 	/**
 	 * {@value}
 	 */
-	private static final int HEIGHT_ARM_START = 5;
+	private static final int HEIGHT_ARM_START = 15;
 
 	/**
 	 * {@value}
 	 */
-	private static final int WIDTH_ARM_START = 5;
+	private static final int WIDTH_ARM_START = 15;
 
 	/**
 	 * {@value}

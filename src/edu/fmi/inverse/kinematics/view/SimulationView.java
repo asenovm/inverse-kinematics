@@ -135,9 +135,6 @@ public class SimulationView extends JFrame implements ModelListener {
 			return;
 		}
 
-		graphics.fillRect(model.getStartX(), model.getStartY(),
-				model.getStartWidth(), model.getStartHeight());
-
 		graphics.setColor(Color.RED);
 		graphics.fillArc(model.getTargetX(), model.getTargetY(),
 				model.getTargetWidth(), model.getTargetHeight(), 0, 360);
@@ -171,6 +168,10 @@ public class SimulationView extends JFrame implements ModelListener {
 
 			drawSegment(graphics, segment);
 		}
+
+		graphics.setColor(Color.BLACK);
+		graphics.fillRect(model.getStartX(), model.getStartY(),
+				model.getStartWidth(), model.getStartHeight());
 	}
 
 	private void drawSegment(Graphics graphics, final Segment segment) {
