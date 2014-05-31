@@ -2,7 +2,7 @@ package edu.fmi.inverse.kinematics;
 
 public class Segment {
 
-	private static final int LENGTH_SEGMENT = 60;
+	public static final int LENGTH_SEGMENT = 60;
 
 	private double length;
 

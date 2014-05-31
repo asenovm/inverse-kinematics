@@ -6,10 +6,6 @@ import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -18,31 +14,10 @@ import javax.swing.JPanel;
 
 import edu.fmi.inverse.kinematics.AngleUtil;
 import edu.fmi.inverse.kinematics.ModelListener;
-import edu.fmi.inverse.kinematics.PositionsCalculator;
 import edu.fmi.inverse.kinematics.Segment;
 import edu.fmi.inverse.kinematics.SimulationModel;
 
 public class SimulationView extends JFrame implements ModelListener {
-
-	/**
-	 * {@value}
-	 */
-	private static final int HEIGHT_ITEM = 15;
-
-	/**
-	 * {@value}
-	 */
-	private static final int WIDTH_ITEM = 15;
-
-	/**
-	 * {@value}
-	 */
-	private static final int HEIGHT_ARM_START = 5;
-
-	/**
-	 * {@value}
-	 */
-	private static final int WIDTH_ARM_START = 5;
 
 	/**
 	 * {@value}
@@ -89,16 +64,10 @@ public class SimulationView extends JFrame implements ModelListener {
 	 */
 	private static final Color COLOR_BORDER = Color.getHSBColor(0, 0, 26.7f);
 
-	private int targetX = 150;
-
-	private int targetY = 150;
-
-	private List<Segment> segments;
+	private SimulationModel model;
 
 	public SimulationView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
-
-		segments = new LinkedList<Segment>();
 
 		final Dimension dimension = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
 		setPreferredSize(dimension);
@@ -112,25 +81,6 @@ public class SimulationView extends JFrame implements ModelListener {
 		setVisible(true);
 
 		addCells();
-
-		addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseMoved(MouseEvent event) {
-				targetX = event.getX();
-				targetY = event.getY();
-				paint(getGraphics());
-				final int centerX = (WIDTH_FRAME - WIDTH_ARM_START) / 2;
-				final int centerY = (HEIGHT_FRAME - HEIGHT_ARM_START) / 2;
-				new PositionsCalculator().calculatePositions(new Point(targetX - centerX,
-						targetY - centerY), new Point(centerX, centerY), segments);
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent event) {
-				// blank
-			}
-		});
 	}
 
 	public SimulationView() throws HeadlessException {
@@ -166,12 +116,18 @@ public class SimulationView extends JFrame implements ModelListener {
 	public void paint(Graphics graphics) {
 		super.paint(graphics);
 
-		final int centerX = (WIDTH_FRAME - WIDTH_ARM_START) / 2;
-		final int centerY = (HEIGHT_FRAME - HEIGHT_ARM_START) / 2;
-		graphics.fillRect(centerX, centerY, WIDTH_ARM_START, HEIGHT_ARM_START);
+		if (model == null) {
+			return;
+		}
+
+		graphics.fillRect(model.getStartX(), model.getStartY(),
+				model.getStartWidth(), model.getStartHeight());
 
 		graphics.setColor(Color.RED);
-		graphics.fillArc(targetX, targetY, WIDTH_ITEM, HEIGHT_ITEM, 0, 360);
+		graphics.fillArc(model.getTargetX(), model.getTargetY(),
+				model.getTargetWidth(), model.getTargetHeight(), 0, 360);
+
+		final List<Segment> segments = model.getSegments();
 
 		double angle = 0;
 		for (int i = 0; i < segments.size(); ++i) {
@@ -210,7 +166,7 @@ public class SimulationView extends JFrame implements ModelListener {
 
 	@Override
 	public void onModelChanged(SimulationModel model) {
-		segments = model.getSegments();
+		this.model = model;
 		invalidate();
 		paint(getGraphics());
 	}

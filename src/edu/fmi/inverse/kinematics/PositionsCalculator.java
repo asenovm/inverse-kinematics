@@ -11,12 +11,12 @@ public class PositionsCalculator {
 	 * {@value}
 	 */
 	private static final double LENGTH_TRIVIAL_ARC = 0.00001;
-	
+
 	/**
 	 * {@value}
 	 */
 	private static final double EPSILON = 0.0001;
-	
+
 	/**
 	 * {@value}
 	 */
@@ -55,69 +55,44 @@ public class PositionsCalculator {
 		return (i < segments.size()) ? segments.get(i).getAngle() : 0;
 	}
 
-	private CalculationState calculatePositions(List<Segment> bones,
+	private CalculationState calculatePositions(List<Segment> segments,
 			double targetX, double targetY) {
 
 		double arrivalDistSqr = 1;
 
-		List<Segment> worldBones = new ArrayList<Segment>();
+		List<Segment> resultSegments = getResultSegments(segments);
 
-		Segment rootWorldBone = new Segment();
-		rootWorldBone.startX = bones.get(0).startX;
-		rootWorldBone.startY = bones.get(0).startY;
-		rootWorldBone.angle = bones.get(0).angle;
-		rootWorldBone.cosAngle = Math.cos(rootWorldBone.angle);
-		rootWorldBone.sinAngle = Math.sin(rootWorldBone.angle);
-		worldBones.add(rootWorldBone);
-
-		for (int i = 1; i < bones.size(); ++i) {
-			Segment prevWorldBone = worldBones.get(i - 1);
-			Segment curLocalBone = bones.get(i);
-
-			Segment newWorldBone = new Segment();
-			newWorldBone.startX = prevWorldBone.startX + prevWorldBone.cosAngle
-					* curLocalBone.startX - prevWorldBone.sinAngle
-					* curLocalBone.startY;
-			newWorldBone.startY = prevWorldBone.startY + prevWorldBone.sinAngle
-					* curLocalBone.startX + prevWorldBone.cosAngle
-					* curLocalBone.startY;
-			newWorldBone.angle = prevWorldBone.angle + curLocalBone.angle;
-			newWorldBone.cosAngle = Math.cos(newWorldBone.angle);
-			newWorldBone.sinAngle = Math.sin(newWorldBone.angle);
-			worldBones.add(newWorldBone);
-		}
-
-		double endX = worldBones.get(bones.size() - 1).startX;
-		double endY = worldBones.get(bones.size() - 1).startY;
+		double endX = resultSegments.get(segments.size() - 1).startX;
+		double endY = resultSegments.get(segments.size() - 1).startY;
 
 		boolean isModified = false;
 
-		for (int i = bones.size() - 2; i >= 0; --i) {
-			double curToEndX = endX - worldBones.get(i).startX;
-			double curToEndY = endY - worldBones.get(i).startY;
-			double curToEndLength = Math.sqrt(curToEndX * curToEndX + curToEndY
-					* curToEndY);
+		for (int i = segments.size() - 2; i >= 0; --i) {
+			double currentToEndX = endX - resultSegments.get(i).startX;
+			double currentToEndY = endY - resultSegments.get(i).startY;
+			double currentToEndLength = Math.sqrt(currentToEndX * currentToEndX
+					+ currentToEndY * currentToEndY);
 
-			double curToTargetX = targetX - worldBones.get(i).startX;
-			double curToTargetY = targetY - worldBones.get(i).startY;
-			double curToTargetLength = Math.sqrt(curToTargetX * curToTargetX
-					+ curToTargetY * curToTargetY);
+			double currentToTargetX = targetX - resultSegments.get(i).startX;
+			double currentToTargetY = targetY - resultSegments.get(i).startY;
+			double currentToTargetLength = Math.sqrt(currentToTargetX
+					* currentToTargetX + currentToTargetY * currentToTargetY);
 
 			double cosRotationAngle;
 			double sinRotationAngle;
 
-			double endTargetMag = (curToEndLength * curToTargetLength);
+			double endTargetLength = (currentToEndLength * currentToTargetLength);
 
-			if (endTargetMag <= EPSILON) {
+			if (endTargetLength <= EPSILON) {
 				cosRotationAngle = 1;
 				sinRotationAngle = 0;
 			} else {
-				cosRotationAngle = (curToEndX * curToTargetX + curToEndY
-						* curToTargetY)
-						/ endTargetMag;
-				sinRotationAngle = (curToEndX * curToTargetY - curToEndY
-						* curToTargetX)
-						/ endTargetMag;
+				cosRotationAngle = (currentToEndX * currentToTargetX + currentToEndY
+						* currentToTargetY)
+						/ endTargetLength;
+				sinRotationAngle = (currentToEndX * currentToTargetY - currentToEndY
+						* currentToTargetX)
+						/ endTargetLength;
 			}
 
 			double rotationAngle = Math.acos(Math.max(-1,
@@ -126,13 +101,13 @@ public class PositionsCalculator {
 				rotationAngle = -rotationAngle;
 			}
 
-			endX = worldBones.get(i).startX + cosRotationAngle * curToEndX
-					- sinRotationAngle * curToEndY;
-			endY = worldBones.get(i).startY + sinRotationAngle * curToEndX
-					+ cosRotationAngle * curToEndY;
+			endX = resultSegments.get(i).startX + cosRotationAngle
+					* currentToEndX - sinRotationAngle * currentToEndY;
+			endY = resultSegments.get(i).startY + sinRotationAngle
+					* currentToEndX + cosRotationAngle * currentToEndY;
 
-			bones.get(i).angle = AngleUtil.simplifyAngle(bones.get(i).angle
-					+ rotationAngle);
+			segments.get(i).angle = AngleUtil
+					.simplifyAngle(segments.get(i).angle + rotationAngle);
 
 			double endToTargetX = (targetX - endX);
 			double endToTargetY = (targetY - endY);
@@ -142,7 +117,7 @@ public class PositionsCalculator {
 			}
 
 			isModified = !isModified
-					&& Math.abs(rotationAngle) * curToEndLength > LENGTH_TRIVIAL_ARC;
+					&& Math.abs(rotationAngle) * currentToEndLength > LENGTH_TRIVIAL_ARC;
 		}
 
 		if (isModified) {
@@ -150,6 +125,36 @@ public class PositionsCalculator {
 		} else {
 			return CalculationState.FAILURE;
 		}
+	}
+
+	private List<Segment> getResultSegments(List<Segment> segments) {
+		List<Segment> resultSegments = new ArrayList<Segment>();
+
+		Segment endSegment = new Segment();
+		endSegment.startX = segments.get(0).startX;
+		endSegment.startY = segments.get(0).startY;
+		endSegment.angle = segments.get(0).angle;
+		endSegment.cosAngle = Math.cos(endSegment.angle);
+		endSegment.sinAngle = Math.sin(endSegment.angle);
+		resultSegments.add(endSegment);
+
+		for (int i = 1; i < segments.size(); ++i) {
+			Segment previousSegment = resultSegments.get(i - 1);
+			Segment currentSegment = segments.get(i);
+
+			Segment resultSegment = new Segment();
+			resultSegment.startX = previousSegment.startX
+					+ previousSegment.cosAngle * currentSegment.startX
+					- previousSegment.sinAngle * currentSegment.startY;
+			resultSegment.startY = previousSegment.startY
+					+ previousSegment.sinAngle * currentSegment.startX
+					+ previousSegment.cosAngle * currentSegment.startY;
+			resultSegment.angle = previousSegment.angle + currentSegment.angle;
+			resultSegment.cosAngle = Math.cos(resultSegment.angle);
+			resultSegment.sinAngle = Math.sin(resultSegment.angle);
+			resultSegments.add(resultSegment);
+		}
+		return resultSegments;
 	}
 
 }

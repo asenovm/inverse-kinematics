@@ -12,6 +12,7 @@ public class InverseKinematics {
 			public void run() {
 				final SimulationModel model = new SimulationModel();
 				final SimulationView view = new SimulationView();
+				view.addMouseMotionListener(model);
 				model.setOnChangedListener(view);
 			}
 		});
