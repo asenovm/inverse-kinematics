@@ -4,8 +4,6 @@ public class Segment {
 
 	public static final int LENGTH_SEGMENT = 60;
 
-	private double length;
-
 	public double angle;
 
 	public double startX;
@@ -26,13 +24,6 @@ public class Segment {
 
 	public double getAngle() {
 		return angle;
-	}
-
-	@Override
-	public String toString() {
-		return "Segment [length=" + length + ", angle=" + angle + ", startX="
-				+ startX + ", startY=" + startY + ", endX=" + endX + ", endY="
-				+ endY + "]";
 	}
 
 }
