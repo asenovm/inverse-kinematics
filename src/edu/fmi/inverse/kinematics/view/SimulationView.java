@@ -122,8 +122,8 @@ public class SimulationView extends JFrame implements ModelListener {
 				paint(getGraphics());
 				final int centerX = (WIDTH_FRAME - WIDTH_ARM_START) / 2;
 				final int centerY = (HEIGHT_FRAME - HEIGHT_ARM_START) / 2;
-				new PositionsCalculator().calculatePositions(new Point(targetX,
-						targetY), new Point(centerX, centerY), segments);
+				new PositionsCalculator().calculatePositions(new Point(targetX - centerX,
+						targetY - centerY), new Point(centerX, centerY), segments);
 			}
 
 			@Override

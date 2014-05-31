@@ -7,11 +7,20 @@ import java.util.List;
 
 public class PositionsCalculator {
 
-	private static final int ITERATION_COUNT_MAX = 1000;
-
-	public static interface PositionListener {
-		void onPositionChanged();
-	}
+	/**
+	 * {@value}
+	 */
+	private static final double LENGTH_TRIVIAL_ARC = 0.00001;
+	
+	/**
+	 * {@value}
+	 */
+	private static final double EPSILON = 0.0001;
+	
+	/**
+	 * {@value}
+	 */
+	private static final int ITERATION_COUNT_MAX = 50;
 
 	public void calculatePositions(final Point target, final Point start,
 			final List<Segment> segments) {
@@ -25,7 +34,7 @@ public class PositionsCalculator {
 		}
 
 		int iterations = 0;
-		while (CalcIK_2D_CCD(ccdBones, target.x - 400, target.y - 300, 1) == CalculationState.PROCESSING
+		while (calculatePositions(ccdBones, target.x, target.y) == CalculationState.PROCESSING
 				|| iterations < ITERATION_COUNT_MAX) {
 			++iterations;
 		}
@@ -46,16 +55,10 @@ public class PositionsCalculator {
 		return (i < segments.size()) ? segments.get(i).getAngle() : 0;
 	}
 
-	public enum CalculationState {
-		SUCCESS, PROCESSING, FAILURE;
-	}
+	private CalculationState calculatePositions(List<Segment> bones,
+			double targetX, double targetY) {
 
-	public CalculationState CalcIK_2D_CCD(List<Segment> bones, double targetX,
-			double targetY, double arrivalDist) {
-
-		final double epsilon = 0.0001;
-		final double trivialArcLength = 0.00001;
-		double arrivalDistSqr = arrivalDist * arrivalDist;
+		double arrivalDistSqr = 1;
 
 		List<Segment> worldBones = new ArrayList<Segment>();
 
@@ -105,7 +108,7 @@ public class PositionsCalculator {
 
 			double endTargetMag = (curToEndLength * curToTargetLength);
 
-			if (endTargetMag <= epsilon) {
+			if (endTargetMag <= EPSILON) {
 				cosRotationAngle = 1;
 				sinRotationAngle = 0;
 			} else {
@@ -133,13 +136,13 @@ public class PositionsCalculator {
 
 			double endToTargetX = (targetX - endX);
 			double endToTargetY = (targetY - endY);
-			
+
 			if (endToTargetX * endToTargetX + endToTargetY * endToTargetY <= arrivalDistSqr) {
 				return CalculationState.SUCCESS;
 			}
 
 			isModified = !isModified
-					&& Math.abs(rotationAngle) * curToEndLength > trivialArcLength;
+					&& Math.abs(rotationAngle) * curToEndLength > LENGTH_TRIVIAL_ARC;
 		}
 
 		if (isModified) {
