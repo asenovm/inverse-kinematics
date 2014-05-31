@@ -16,6 +16,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import edu.fmi.inverse.kinematics.AngleUtil;
 import edu.fmi.inverse.kinematics.ModelListener;
 import edu.fmi.inverse.kinematics.PositionsCalculator;
 import edu.fmi.inverse.kinematics.Segment;
@@ -116,7 +117,6 @@ public class SimulationView extends JFrame implements ModelListener {
 
 			@Override
 			public void mouseMoved(MouseEvent event) {
-				System.out.println("moved");
 				targetX = event.getX();
 				targetY = event.getY();
 				paint(getGraphics());
@@ -177,7 +177,7 @@ public class SimulationView extends JFrame implements ModelListener {
 		for (int i = 0; i < segments.size(); ++i) {
 			final Segment segment = segments.get(i);
 			angle += segment.getAngle();
-			angle = PositionsCalculator.simplifyAngle(angle);
+			angle = AngleUtil.simplifyAngle(angle);
 			double cosAngle = Math.cos(angle);
 			double sinAngle = Math.sin(angle);
 

@@ -41,15 +41,6 @@ public class PositionsCalculator {
 		}
 	}
 
-	public static double simplifyAngle(double angle) {
-		angle = angle % (2.0 * Math.PI);
-		if (angle < -Math.PI)
-			angle += (2.0 * Math.PI);
-		else if (angle > Math.PI)
-			angle -= (2.0 * Math.PI);
-		return angle;
-	}
-
 	private class Bone_2D_CCD_World {
 		public double x;
 		public double y;
@@ -141,8 +132,8 @@ public class PositionsCalculator {
 			endY = worldBones.get(boneIdx).y + sinRotAng * curToEndX
 					+ cosRotAng * curToEndY;
 
-			bones.get(boneIdx).angle = simplifyAngle(bones.get(boneIdx).angle
-					+ rotAng);
+			bones.get(boneIdx).angle = AngleUtil.simplifyAngle(bones
+					.get(boneIdx).angle + rotAng);
 
 			double endToTargetX = (targetX - endX);
 			double endToTargetY = (targetY - endY);
