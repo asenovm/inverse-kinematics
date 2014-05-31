@@ -1,8 +1,10 @@
 package edu.fmi.inverse.kinematics.view;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GridLayout;
 import java.awt.HeadlessException;
@@ -167,11 +169,17 @@ public class SimulationView extends JFrame implements ModelListener {
 						* sinAngle);
 			}
 
-			graphics.drawLine((int) (segment.startX + WIDTH_FRAME / 2),
-					(int) (segment.startY + HEIGHT_FRAME / 2),
-					(int) (segment.endX + WIDTH_FRAME / 2),
-					(int) (segment.endY + HEIGHT_FRAME / 2));
+			drawSegment(graphics, segment);
 		}
+	}
+
+	private void drawSegment(Graphics graphics, final Segment segment) {
+		final Graphics2D graphics2D = (Graphics2D) graphics;
+		graphics2D.setStroke(new BasicStroke(6));
+		graphics2D.drawLine((int) (segment.startX + WIDTH_FRAME / 2),
+				(int) (segment.startY + HEIGHT_FRAME / 2),
+				(int) (segment.endX + WIDTH_FRAME / 2),
+				(int) (segment.endY + HEIGHT_FRAME / 2));
 	}
 
 	@Override
