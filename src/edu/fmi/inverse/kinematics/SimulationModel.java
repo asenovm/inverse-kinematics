@@ -42,9 +42,9 @@ public class SimulationModel implements
 		target = new Point(start.x + 170, start.y);
 
 		segments = new LinkedList<Segment>();
-		segments.add(new Segment(50));
-		segments.add(new Segment(50));
-		segments.add(new Segment(50));
+		segments.add(new Segment());
+		segments.add(new Segment());
+		segments.add(new Segment());
 
 		new PositionsCalculator().calculatePositions(target, start, segments);
 	}

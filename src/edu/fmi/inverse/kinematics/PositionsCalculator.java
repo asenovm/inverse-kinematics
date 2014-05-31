@@ -17,7 +17,7 @@ public class PositionsCalculator {
 			final List<Segment> segments) {
 		List<Segment> ccdBones = new LinkedList<Segment>();
 		for (int i = 0; i <= segments.size(); ++i) {
-			Segment segment = new Segment(50);
+			Segment segment = new Segment();
 			segment.angle = getAngleForSegment(segments, i);
 			segment.startX = getStartXForSegment(segments, i);
 			segment.startY = 0;
@@ -59,7 +59,7 @@ public class PositionsCalculator {
 
 		List<Segment> worldBones = new ArrayList<Segment>();
 
-		Segment rootWorldBone = new Segment(50);
+		Segment rootWorldBone = new Segment();
 		rootWorldBone.startX = bones.get(0).startX;
 		rootWorldBone.startY = bones.get(0).startY;
 		rootWorldBone.angle = bones.get(0).angle;
@@ -71,7 +71,7 @@ public class PositionsCalculator {
 			Segment prevWorldBone = worldBones.get(i - 1);
 			Segment curLocalBone = bones.get(i);
 
-			Segment newWorldBone = new Segment(50);
+			Segment newWorldBone = new Segment();
 			newWorldBone.startX = prevWorldBone.startX + prevWorldBone.cosAngle
 					* curLocalBone.startX - prevWorldBone.sinAngle
 					* curLocalBone.startY;

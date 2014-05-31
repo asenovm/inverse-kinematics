@@ -2,6 +2,8 @@ package edu.fmi.inverse.kinematics;
 
 public class Segment {
 
+	private static final int LENGTH_SEGMENT = 60;
+
 	private double length;
 
 	public double angle;
@@ -13,17 +15,13 @@ public class Segment {
 	public double endX;
 
 	public double endY;
-	
+
 	public double sinAngle;
-	
+
 	public double cosAngle;
 
-	public Segment(final double length) {
-		this.length = length;
-	}
-
 	public double getLength() {
-		return length;
+		return LENGTH_SEGMENT;
 	}
 
 	public double getAngle() {
