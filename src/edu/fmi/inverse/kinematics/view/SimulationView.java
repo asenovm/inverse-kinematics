@@ -184,15 +184,9 @@ public class SimulationView extends JFrame implements ModelListener {
 			if (i == 0) {
 				segment.startX = 0;
 				segment.startY = 0;
-				segment.endX = (int) (segment.startX + segment.getLength()
-						* cosAngle);
-				segment.endY = (int) (segment.startY + segment.getLength()
-						* sinAngle);
+				segment.endX = segment.startX + segment.getLength() * cosAngle;
+				segment.endY = segment.startY + segment.getLength() * sinAngle;
 				graphics.setColor(Color.BLUE);
-				graphics.drawLine(segment.startX + WIDTH_FRAME / 2,
-						segment.startY + HEIGHT_FRAME / 2, segment.endX
-								+ WIDTH_FRAME / 2, segment.endY + HEIGHT_FRAME
-								/ 2);
 			} else {
 				final Segment previousSegment = segments.get(i - 1);
 				segment.startX = previousSegment.endX;
@@ -206,11 +200,11 @@ public class SimulationView extends JFrame implements ModelListener {
 				} else {
 					graphics.setColor(Color.CYAN);
 				}
-				graphics.drawLine(segment.startX + WIDTH_FRAME / 2,
-						segment.startY + HEIGHT_FRAME / 2, segment.endX
-								+ WIDTH_FRAME / 2, segment.endY + HEIGHT_FRAME
-								/ 2);
 			}
+			graphics.drawLine((int) (segment.startX + WIDTH_FRAME / 2),
+					(int) (segment.startY + HEIGHT_FRAME / 2),
+					(int) (segment.endX + WIDTH_FRAME / 2),
+					(int) (segment.endY + HEIGHT_FRAME / 2));
 		}
 	}
 

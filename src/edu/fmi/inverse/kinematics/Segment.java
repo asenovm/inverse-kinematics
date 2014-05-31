@@ -6,13 +6,17 @@ public class Segment {
 
 	public double angle;
 
-	public int startX;
+	public double startX;
 
-	public int startY;
+	public double startY;
 
-	public int endX;
+	public double endX;
 
-	public int endY;
+	public double endY;
+	
+	public double sinAngle;
+	
+	public double cosAngle;
 
 	public Segment(final double length) {
 		this.length = length;
