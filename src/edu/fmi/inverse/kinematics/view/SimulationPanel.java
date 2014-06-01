@@ -70,7 +70,7 @@ public class SimulationPanel extends JPanel implements ModelListener {
 	}
 
 	public SimulationPanel() {
-		super();
+		super(true);
 		final Dimension dimension = new Dimension(WIDTH_FRAME, HEIGHT_FRAME);
 		setPreferredSize(dimension);
 		setMinimumSize(dimension);
@@ -157,7 +157,6 @@ public class SimulationPanel extends JPanel implements ModelListener {
 	@Override
 	public void onModelChanged(SimulationModel model) {
 		this.model = model;
-		invalidate();
-		paint(getGraphics());
+		repaint();
 	}
 }

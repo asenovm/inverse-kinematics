@@ -164,12 +164,16 @@ public class SimulationModel implements MouseMotionListener {
 	}
 
 	public void increaseSegmentLength() {
-		Segment.LENGTH_SEGMENT += LENGTH_SEGMENT_UPDATE;
-		updateSegments();
+		if (Segment.LENGTH_SEGMENT < Segment.LENGTH_SEGMENT_MAX) {
+			Segment.LENGTH_SEGMENT += LENGTH_SEGMENT_UPDATE;
+			updateSegments();
+		}
 	}
 
 	public void decreaseSegmentLength() {
-		Segment.LENGTH_SEGMENT -= LENGTH_SEGMENT_UPDATE;
-		updateSegments();
+		if (Segment.LENGTH_SEGMENT > Segment.LENGTH_SEGMENT_MIN) {
+			Segment.LENGTH_SEGMENT -= LENGTH_SEGMENT_UPDATE;
+			updateSegments();
+		}
 	}
 }
