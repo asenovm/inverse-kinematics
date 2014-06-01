@@ -1,5 +1,6 @@
 package edu.fmi.inverse.kinematics.view;
 
+import static edu.fmi.inverse.kinematics.view.Label.*;
 import static edu.fmi.inverse.kinematics.SimulationModel.WIDTH_FRAME;
 
 import java.awt.Dimension;
@@ -86,13 +87,10 @@ public class OptionsPanel extends JPanel {
 		setMinimumSize(panelDimension);
 		setMaximumSize(panelDimension);
 
-		createAndAddButton(Label.ADD_SEGMENT, new AddSegmentActionListener());
-		createAndAddButton(Label.REMOVE_SEGMENT,
-				new RemoveSegmentActionListener());
-		createAndAddButton(Label.INCREASE_LENGTH,
-				new IncreaseLengthActionListener());
-		createAndAddButton(Label.DECREASE_LENGTH,
-				new DecreaseLengthActionListener());
+		createAndAddButton(ADD_SEGMENT, new AddSegmentActionListener());
+		createAndAddButton(REMOVE_SEGMENT, new RemoveSegmentActionListener());
+		createAndAddButton(INCREASE_LENGTH, new IncreaseLengthActionListener());
+		createAndAddButton(DECREASE_LENGTH, new DecreaseLengthActionListener());
 	}
 
 	private void createAndAddButton(final String text,

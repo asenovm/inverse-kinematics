@@ -9,6 +9,8 @@ import java.util.List;
 
 public class SimulationModel implements MouseMotionListener {
 
+	private static final int LENGTH_SEGMENT_UPDATE = 10;
+
 	/**
 	 * {@value}
 	 */
@@ -145,12 +147,12 @@ public class SimulationModel implements MouseMotionListener {
 	}
 
 	public void increaseSegmentLength() {
-		Segment.LENGTH_SEGMENT += 10;
+		Segment.LENGTH_SEGMENT += LENGTH_SEGMENT_UPDATE;
 		updateSegments();
 	}
 
 	public void decreaseSegmentLength() {
-		Segment.LENGTH_SEGMENT -= 10;
+		Segment.LENGTH_SEGMENT -= LENGTH_SEGMENT_UPDATE;
 		updateSegments();
 	}
 }

@@ -72,7 +72,7 @@ public class SimulationPanel extends JPanel implements ModelListener {
 		setMaximumSize(dimension);
 
 		addCells();
-		colors.put(0, Color.RED);
+		colors.put(0, Color.YELLOW);
 		colors.put(1, Color.BLUE);
 		colors.put(2, Color.CYAN);
 		colors.put(3, Color.DARK_GRAY);
@@ -80,7 +80,7 @@ public class SimulationPanel extends JPanel implements ModelListener {
 		colors.put(5, Color.MAGENTA);
 		colors.put(6, Color.ORANGE);
 		colors.put(7, Color.PINK);
-		colors.put(8, Color.RED);
+		colors.put(8, Color.WHITE);
 	}
 
 	private JPanel createCell() {
