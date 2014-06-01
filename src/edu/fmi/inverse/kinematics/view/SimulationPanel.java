@@ -1,5 +1,8 @@
 package edu.fmi.inverse.kinematics.view;
 
+import static edu.fmi.inverse.kinematics.SimulationModel.HEIGHT_FRAME;
+import static edu.fmi.inverse.kinematics.SimulationModel.WIDTH_FRAME;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,16 +27,6 @@ public class SimulationPanel extends JPanel implements ModelListener {
 	 * {@value}
 	 */
 	private static final long serialVersionUID = -3388697450030097056L;
-
-	/**
-	 * {@value}
-	 */
-	private static final int HEIGHT_FRAME = 600;
-
-	/**
-	 * {@value}
-	 */
-	private static final int WIDTH_FRAME = 800;
 
 	/**
 	 * {@value}

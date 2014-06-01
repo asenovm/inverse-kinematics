@@ -12,12 +12,12 @@ public class SimulationModel implements MouseMotionListener {
 	/**
 	 * {@value}
 	 */
-	private static final int HEIGHT_FRAME = 600;
+	public static final int HEIGHT_FRAME = 600;
 
 	/**
 	 * {@value}
 	 */
-	private static final int WIDTH_FRAME = 800;
+	public static final int WIDTH_FRAME = 800;
 
 	/**
 	 * {@value}
@@ -59,8 +59,8 @@ public class SimulationModel implements MouseMotionListener {
 
 		start = new Point((WIDTH_FRAME - WIDTH_ARM_START) / 2,
 				(HEIGHT_FRAME - HEIGHT_ARM_START) / 2);
-		target = new Point(WIDTH_FRAME / 2 + 3 * Segment.LENGTH_SEGMENT - start.x,
-				(HEIGHT_FRAME - HEIGHT_TARGET) / 2 - start.y);
+		target = new Point(WIDTH_FRAME / 2 + 3 * Segment.LENGTH_SEGMENT
+				- start.x, (HEIGHT_FRAME - HEIGHT_TARGET) / 2 - start.y);
 	}
 
 	public void setOnChangedListener(final ModelListener listener) {
@@ -79,10 +79,27 @@ public class SimulationModel implements MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent event) {
-		target.x = event.getX() - start.x;
-		target.y = event.getY() - start.y;
+		final int eventX = event.getX();
+		final int eventY = event.getY();
+
+		if (!isPointWithinSimulationBoundaries(eventX, eventY)) {
+			return;
+		}
+
+		target.x = eventX - start.x;
+		target.y = eventY - start.y;
+		updateSegments();
+	}
+
+	private void updateSegments() {
 		calculator.calculatePositions(target, start, segments);
 		listener.onModelChanged(this);
+	}
+
+	private boolean isPointWithinSimulationBoundaries(final int x, final int y) {
+		return x >= WIDTH_ARM_START && x <= WIDTH_FRAME - WIDTH_ARM_START
+				&& y >= HEIGHT_ARM_START
+				&& y <= HEIGHT_FRAME - HEIGHT_ARM_START;
 	}
 
 	public int getTargetX() {
@@ -115,5 +132,25 @@ public class SimulationModel implements MouseMotionListener {
 
 	public int getTargetHeight() {
 		return HEIGHT_TARGET;
+	}
+
+	public void addSegment() {
+		segments.add(new Segment());
+		updateSegments();
+	}
+
+	public void removeSegment() {
+		segments.remove(segments.size() - 1);
+		updateSegments();
+	}
+
+	public void increaseSegmentLength() {
+		Segment.LENGTH_SEGMENT += 10;
+		updateSegments();
+	}
+
+	public void decreaseSegmentLength() {
+		Segment.LENGTH_SEGMENT -= 10;
+		updateSegments();
 	}
 }

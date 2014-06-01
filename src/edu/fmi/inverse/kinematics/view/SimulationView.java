@@ -1,5 +1,6 @@
 package edu.fmi.inverse.kinematics.view;
 
+import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 
@@ -7,6 +8,7 @@ import javax.swing.JFrame;
 
 import edu.fmi.inverse.kinematics.ModelListener;
 import edu.fmi.inverse.kinematics.SimulationModel;
+import edu.fmi.inverse.kinematics.controller.OptionsMenuController;
 
 public class SimulationView extends JFrame implements ModelListener {
 
@@ -20,13 +22,20 @@ public class SimulationView extends JFrame implements ModelListener {
 	 */
 	private static final String TITLE_FRAME = "Inverse Kinamatics - CCD simulation";
 
-	private final SimulationPanel delegee;
+	private final SimulationPanel simulationPanel;
+
+	private final OptionsPanel optionsPanel;
 
 	public SimulationView(String title, GraphicsConfiguration gc) {
 		super(title, gc);
 
-		delegee = new SimulationPanel();
-		add(delegee);
+		setLayout(new BorderLayout());
+
+		simulationPanel = new SimulationPanel();
+		optionsPanel = new OptionsPanel();
+
+		add(simulationPanel, BorderLayout.PAGE_START);
+		add(optionsPanel, BorderLayout.PAGE_END);
 
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -49,7 +58,11 @@ public class SimulationView extends JFrame implements ModelListener {
 
 	@Override
 	public void onModelChanged(SimulationModel model) {
-		delegee.onModelChanged(model);
+		simulationPanel.onModelChanged(model);
+	}
+
+	public void setController(final OptionsMenuController controller) {
+		optionsPanel.setController(controller);
 	}
 
 }
