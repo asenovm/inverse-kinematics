@@ -31,6 +31,11 @@ public class SimulationPanel extends JPanel implements ModelListener {
 	/**
 	 * {@value}
 	 */
+	private static final int WIDTH_SEGMENT = 6;
+
+	/**
+	 * {@value}
+	 */
 	private static final int NUM_CELLS = 5;
 
 	/**
@@ -79,7 +84,7 @@ public class SimulationPanel extends JPanel implements ModelListener {
 		colors.put(4, Color.GREEN);
 		colors.put(5, Color.MAGENTA);
 		colors.put(6, Color.ORANGE);
-		colors.put(7, Color.PINK);
+		colors.put(7, Color.GRAY);
 		colors.put(8, Color.WHITE);
 	}
 
@@ -110,7 +115,7 @@ public class SimulationPanel extends JPanel implements ModelListener {
 		double angle = 0;
 		for (int i = 0; i < segments.size(); ++i) {
 			final Segment segment = segments.get(i);
-			angle += segment.getAngle();
+			angle += segment.angle;
 			angle = AngleUtil.simplifyAngle(angle);
 			double cosAngle = Math.cos(angle);
 			double sinAngle = Math.sin(angle);
@@ -142,7 +147,7 @@ public class SimulationPanel extends JPanel implements ModelListener {
 
 	private void drawSegment(Graphics graphics, final Segment segment) {
 		final Graphics2D graphics2D = (Graphics2D) graphics;
-		graphics2D.setStroke(new BasicStroke(6));
+		graphics2D.setStroke(new BasicStroke(WIDTH_SEGMENT));
 		graphics2D.drawLine((int) (segment.startX + WIDTH_FRAME / 2),
 				(int) (segment.startY + HEIGHT_FRAME / 2),
 				(int) (segment.endX + WIDTH_FRAME / 2),

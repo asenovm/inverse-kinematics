@@ -9,6 +9,19 @@ import java.util.List;
 
 public class SimulationModel implements MouseMotionListener {
 
+	/**
+	 * {@value}
+	 */
+	private static final int COUNT_MIN_SEGMENTS = 3;
+
+	/**
+	 * {@value}
+	 */
+	private static final int COUNT_MAX_SEGMENTS = 9;
+
+	/**
+	 * {@value}
+	 */
 	private static final int LENGTH_SEGMENT_UPDATE = 10;
 
 	/**
@@ -137,13 +150,17 @@ public class SimulationModel implements MouseMotionListener {
 	}
 
 	public void addSegment() {
-		segments.add(new Segment());
-		updateSegments();
+		if (segments.size() < COUNT_MAX_SEGMENTS) {
+			segments.add(new Segment());
+			updateSegments();
+		}
 	}
 
 	public void removeSegment() {
-		segments.remove(segments.size() - 1);
-		updateSegments();
+		if (segments.size() > COUNT_MIN_SEGMENTS) {
+			segments.remove(segments.size() - 1);
+			updateSegments();
+		}
 	}
 
 	public void increaseSegmentLength() {

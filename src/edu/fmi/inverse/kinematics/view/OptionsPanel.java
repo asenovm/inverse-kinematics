@@ -3,6 +3,7 @@ package edu.fmi.inverse.kinematics.view;
 import static edu.fmi.inverse.kinematics.view.Label.*;
 import static edu.fmi.inverse.kinematics.SimulationModel.WIDTH_FRAME;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -98,6 +99,8 @@ public class OptionsPanel extends JPanel {
 		final JButton button = new JButton(text);
 		button.setFocusPainted(false);
 		button.addActionListener(listener);
+		button.setBackground(Color.DARK_GRAY);
+		button.setForeground(Color.LIGHT_GRAY);
 		add(button);
 	}
 

@@ -22,8 +22,4 @@ public class Segment {
 		return LENGTH_SEGMENT;
 	}
 
-	public double getAngle() {
-		return angle;
-	}
-
 }

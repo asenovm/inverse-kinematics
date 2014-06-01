@@ -52,7 +52,7 @@ public class PositionsCalculator {
 	}
 
 	private double getAngleForSegment(final List<Segment> segments, int i) {
-		return (i < segments.size()) ? segments.get(i).getAngle() : 0;
+		return (i < segments.size()) ? segments.get(i).angle : 0;
 	}
 
 	private CalculationState calculatePositions(List<Segment> segments,
